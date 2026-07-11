@@ -1,0 +1,89 @@
+"use client";
+
+import { Check, X } from "lucide-react";
+
+const TIERS = [
+  {
+    name: "Quick Verification",
+    price: 0.5,
+    tier: "quick",
+    features: [
+      { text: "Up to 5 claims", included: true },
+      { text: "Basic source analysis", included: true },
+      { text: "Trust score", included: true },
+      { text: "Contradiction detection", included: false },
+      { text: "Revision suggestions", included: false },
+    ],
+    turnaround: "30 seconds",
+  },
+  {
+    name: "Deep Verification",
+    price: 2.0,
+    tier: "deep",
+    popular: true,
+    features: [
+      { text: "Up to 20 claims", included: true },
+      { text: "Full source analysis", included: true },
+      { text: "Trust score", included: true },
+      { text: "Contradiction detection", included: true },
+      { text: "Revision suggestions", included: true },
+    ],
+    turnaround: "2 minutes",
+  },
+  {
+    name: "Claim Bundle",
+    price: 5.0,
+    tier: "bundle",
+    features: [
+      { text: "Up to 100 claims", included: true },
+      { text: "Full source analysis", included: true },
+      { text: "Trust score", included: true },
+      { text: "Contradiction detection", included: true },
+      { text: "Revision suggestions", included: true },
+    ],
+    turnaround: "5 minutes",
+  },
+];
+
+export default function PricingPage() {
+  return (
+    <div className="max-w-5xl mx-auto px-4 py-12">
+      <div className="text-center mb-12">
+        <h1 className="text-3xl font-bold mb-4">Pay-Per-Verification Pricing</h1>
+        <p className="text-[#a0a0b0] max-w-xl mx-auto">Agents pay in USDC through CAP. No subscriptions. No hidden fees. Just verified truth.</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {TIERS.map((t) => (
+          <div key={t.tier} className={`bg-[#12121a] border rounded-xl p-8 relative ${
+            t.popular ? "border-blue-500 shadow-lg shadow-blue-500/10" : "border-[#1e293b]"
+          }`}>
+            {t.popular && (
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                Most Popular
+              </div>
+            )}
+            <h3 className="text-lg font-semibold mb-1">{t.name}</h3>
+            <div className="text-3xl font-bold mb-1">${t.price} <span className="text-base font-normal text-[#6b7280]">USDC</span></div>
+            <div className="text-sm text-[#6b7280] mb-6">~{t.turnaround} turnaround</div>
+            <div className="space-y-3 mb-8">
+              {t.features.map((f, i) => (
+                <div key={i} className="flex items-center gap-2 text-sm">
+                  {f.included ? <Check className="w-4 h-4 text-green-400" /> : <X className="w-4 h-4 text-[#6b7280]" />}
+                  <span className={f.included ? "text-white" : "text-[#6b7280]"}>{f.text}</span>
+                </div>
+              ))}
+            </div>
+            <a href="/demo" className={`block text-center py-3 rounded-xl font-medium transition-colors ${
+              t.popular ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-[#1e293b] hover:bg-[#252535] text-white"
+            }`}>Try {t.name}</a>
+          </div>
+        ))}
+      </div>
+
+      <div className="text-center mt-12 text-sm text-[#6b7280]">
+        <p>Payment handled via CAP • USDC on Base • On-chain settlement</p>
+      </div>
+    </div>
+  );
+}
