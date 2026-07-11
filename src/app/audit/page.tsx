@@ -92,3 +92,5 @@ export default function AuditPage() {
     </div>
   );
 }
+
+{/* Audit trail added by Rohan - tracks all verification jobs for transparency */}
