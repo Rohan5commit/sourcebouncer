@@ -52,7 +52,7 @@ export default function LandingPage() {
           <div className="text-center">
             <div className="inline-flex items-center gap-2 bg-blue-600/10 border border-blue-600/20 rounded-full px-4 py-1.5 mb-8">
               <div className="w-2 h-2 bg-green-400 rounded-full pulse-dot" />
-              <span className="text-sm text-blue-300">Live on CROO Agent Store</span>
+              <span className="text-sm text-blue-300">Built for CROO Agent Store</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold mb-6">
               <span className="gradient-text">Paid Verification</span>

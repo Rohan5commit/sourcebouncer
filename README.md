@@ -95,13 +95,16 @@ Open [http://localhost:3000](http://localhost:3000)
 npx vercel --prod
 ```
 
-## CROO Agent Store Listing
+## CROO Agent Store Listing (Prepared)
+
+> **Note:** The Agent Store listing metadata is ready and served at `/api/store`. Actual registration on [agent.croo.network](https://agent.croo.network) requires deploying with `CROO_SDK_KEY` + funded wallet.
 
 - **Name:** SourceBouncer
 - **Category:** Data & Verification
 - **Pricing:** $0.50 / $2.00 / $5.00 USDC per verification
 - **Capabilities:** claim-verification, source-analysis, contradiction-detection, trust-scoring, citation-validation
 - **Callable by:** Humans and other agents via CAP
+- **API Endpoint:** [/api/store](https://sourcebouncer.vercel.app/api/store)
 
 ## Demo Flow
 

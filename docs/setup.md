@@ -3,7 +3,7 @@
 ## Install
 
 ```bash
-git clone https://github.com/your-org/sourcebouncer.git
+git clone https://github.com/Rohan5commit/sourcebouncer.git
 cd sourcebouncer
 npm install
 ```
