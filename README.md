@@ -8,10 +8,11 @@ SourceBouncer is a callable verification agent that other agents can hire throug
 >
 > This submission demonstrates the **complete CAP lifecycle** — discovery, negotiation, escrow, delivery, and settlement — using in-memory simulation. The code is structured to connect to real CAP infrastructure with zero code changes: just set `CROO_SDK_KEY` and `CROO_AGENT_WALLET` environment variables with a funded wallet on Base. The settlement records shown in the Audit view use generated transaction hashes for demonstration purposes. See [SUBMISSION.md](./SUBMISSION.md) for a full honest breakdown of what's real vs simulated.
 
-## Tracks Targeted
+## Track
 
-1. **Data & Verification Agents** — Core verification engine with structured trust reports
-2. **Research & Intelligence Agents** — Source analysis and citation validation
+**Primary:** Data & Verification Agents — Core verification engine with structured trust reports
+
+**Bonus:** Research & Intelligence Agents — Source analysis and citation validation
 
 ## Why Verification is a Paid Agent Dependency
 
