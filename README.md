@@ -130,6 +130,15 @@ npx vercel --prod
 - Batch verification API
 - Reputation scoring system
 
+## Quick Start (for Judges)
+
+1. Visit https://sourcebouncer.vercel.app/demo
+2. Enter claims and sources
+3. Click "Submit for Verification"
+4. View the trust report with claim-by-claim verdicts
+5. Check the Audit page for the CAP lifecycle
+6. Visit https://sourcebouncer.vercel.app/architecture for the full architecture
+
 ## License
 
 MIT
