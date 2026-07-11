@@ -5,11 +5,13 @@ import {
   DownstreamAgentAction,
 } from "@/lib/schemas";
 
-// In-memory store for demo (would be database in production)
-const tasks: Map<string, VerificationTask> = new Map();
-const reports: Map<string, TrustReport> = new Map();
-const downstreamActions: Map<string, DownstreamAgentAction> = new Map();
-const qaHistory: Map<string, { question: string; answer: string; report_id: string; timestamp: string }[]> = new Map();
+// In-memory store with persistent demo data
+let tasks: Map<string, VerificationTask> = new Map();
+let reports: Map<string, TrustReport> = new Map();
+let downstreamActions: Map<string, DownstreamAgentAction> = new Map();
+let qaHistory: Map<string, { question: string; answer: string; report_id: string; timestamp: string }[]> = new Map();
+
+let initialized = false;
 
 export function createTask(task: VerificationTask): VerificationTask {
   tasks.set(task.task_id, task);
@@ -72,50 +74,23 @@ export function getQAHistory(reportId: string) {
   return qaHistory.get(reportId) || [];
 }
 
-// Initialize with demo data
 export function initializeDemoData(): void {
-  if (tasks.size > 0) return; // Already initialized
+  if (initialized) return;
+  initialized = true;
 
   const demoTaskId = uuidv4();
   const demoTask: VerificationTask = {
     task_id: demoTaskId,
     requester_id: "demo-agent-001",
     claims: [
-      {
-        claim_id: "c1",
-        claim_text: "Bitcoin was created by Satoshi Nakamoto in 2009",
-        context: "Historical claim about cryptocurrency origins",
-      },
-      {
-        claim_id: "c2",
-        claim_text: "The Earth is flat and does not rotate",
-        context: "Pseudoscientific claim",
-      },
-      {
-        claim_id: "c3",
-        claim_text: "OpenAI released GPT-4 in March 2023",
-        context: "AI industry timeline claim",
-      },
+      { claim_id: "c1", claim_text: "Bitcoin was created by Satoshi Nakamoto in 2009", context: "Historical claim about cryptocurrency origins" },
+      { claim_id: "c2", claim_text: "The Earth is flat and does not rotate", context: "Pseudoscientific claim" },
+      { claim_id: "c3", claim_text: "OpenAI released GPT-4 in March 2023", context: "AI industry timeline claim" },
     ],
     sources: [
-      {
-        source_id: "s1",
-        title: "Bitcoin Whitepaper",
-        content: "Bitcoin: A Peer-to-Peer Electronic Cash System was published by Satoshi Nakamoto in 2008. The network went live in January 2009.",
-        source_type: "academic",
-      },
-      {
-        source_id: "s2",
-        title: "NASA Earth Science",
-        content: "Earth is an oblate spheroid that rotates on its axis, completing one rotation approximately every 24 hours.",
-        source_type: "government",
-      },
-      {
-        source_id: "s3",
-        title: "OpenAI GPT-4 Announcement",
-        content: "OpenAI announced GPT-4 on March 14, 2023. It is a multimodal large language model.",
-        source_type: "industry",
-      },
+      { source_id: "s1", title: "Bitcoin Whitepaper", content: "Bitcoin: A Peer-to-Peer Electronic Cash System was published by Satoshi Nakamoto in 2008. The network went live in January 2009.", source_type: "academic" },
+      { source_id: "s2", title: "NASA Earth Science", content: "Earth is an oblate spheroid that rotates on its axis, completing one rotation approximately every 24 hours.", source_type: "government" },
+      { source_id: "s3", title: "OpenAI GPT-4 Announcement", content: "OpenAI announced GPT-4 on March 14, 2023. It is a multimodal large language model.", source_type: "industry" },
     ],
     pricing_tier: "deep",
     created_at: new Date(Date.now() - 300000).toISOString(),
@@ -169,7 +144,6 @@ export function initializeDemoData(): void {
   };
   reports.set(demoReport.report_id, demoReport);
 
-  // Add downstream agent action
   const demoAction: DownstreamAgentAction = {
     action_id: uuidv4(),
     report_id: demoReport.report_id,

@@ -2,22 +2,28 @@
 
 import { useState, useEffect } from "react";
 import { MessageSquare, Send, Loader2 } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function AskPage() {
   const [question, setQuestion] = useState("");
   const [reportId, setReportId] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [chat, setChat] = useState<{ q: string; a: string }[]>([]);
 
   useEffect(() => {
-    fetch("/api/tasks").then((r) => r.json()).then((d) => {
-      if (d.reports?.length > 0) setReportId(d.reports[0].report_id);
-    });
+    fetch("/api/tasks")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.reports?.length > 0) setReportId(d.reports[0].report_id);
+      })
+      .catch(() => setError("Failed to load reports"));
   }, []);
 
   const handleSubmit = async () => {
     if (!question.trim() || !reportId) return;
     setLoading(true);
+    setError("");
     try {
       const res = await fetch("/api/qa", {
         method: "POST",
@@ -25,10 +31,14 @@ export default function AskPage() {
         body: JSON.stringify({ question, report_id: reportId }),
       });
       const data = await res.json();
-      setChat((prev) => [...prev, { q: question, a: data.answer }]);
-      setQuestion("");
+      if (data.error) {
+        setError(data.error);
+      } else {
+        setChat((prev) => [...prev, { q: question, a: data.answer }]);
+        setQuestion("");
+      }
     } catch {
-      setChat((prev) => [...prev, { q: question, a: "Error: Failed to get answer." }]);
+      setError("Failed to get answer. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -43,32 +53,32 @@ export default function AskPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
-      <div className="flex items-center gap-3 mb-8">
-        <MessageSquare className="w-8 h-8 text-blue-400" />
-        <div>
-          <h1 className="text-3xl font-bold">Ask SourceBouncer</h1>
-          <p className="text-sm text-[#6b7280]">Get grounded answers about verification results</p>
-        </div>
-      </div>
+      <PageHeader icon={MessageSquare} title="Ask SourceBouncer" subtitle="Get grounded answers about verification results" />
 
-      {!reportId && (
+      {!reportId && !error && (
         <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-8 text-yellow-300 text-sm">
-          No verification reports found. Run a verification first on the <a href="/demo" className="underline">Demo page</a>.
+          Loading reports...
         </div>
       )}
 
-      {/* Suggested Questions */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {suggestedQuestions.map((q, i) => (
-          <button key={i} onClick={() => setQuestion(q)} className="text-xs bg-[#12121a] border border-[#1e293b] hover:border-blue-500/30 text-[#a0a0b0] hover:text-white px-3 py-1.5 rounded-full transition-colors">
-            {q}
-          </button>
-        ))}
-      </div>
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-8 text-red-300 text-sm">
+          {error}
+        </div>
+      )}
 
-      {/* Chat */}
+      {reportId && (
+        <div className="flex flex-wrap gap-2 mb-6">
+          {suggestedQuestions.map((q, i) => (
+            <button key={i} onClick={() => setQuestion(q)} className="text-xs bg-[#12121a] border border-[#1e293b] hover:border-blue-500/30 text-[#a0a0b0] hover:text-white px-3 py-1.5 rounded-full transition-colors">
+              {q}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="bg-[#12121a] border border-[#1e293b] rounded-xl p-6 mb-6 min-h-[200px] max-h-[400px] overflow-y-auto">
-        {chat.length === 0 && (
+        {chat.length === 0 && !error && (
           <div className="text-center text-[#6b7280] py-8">
             Ask a question about the verification results above.
           </div>
@@ -81,7 +91,6 @@ export default function AskPage() {
         ))}
       </div>
 
-      {/* Input */}
       <div className="flex gap-3">
         <input
           value={question}

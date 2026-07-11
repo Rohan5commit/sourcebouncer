@@ -2,16 +2,17 @@ import { v4 as uuidv4 } from "uuid";
 import {
   CapInvocation,
   SettlementRecord,
-  VerificationTask,
-  TrustReport,
   PricingTier,
+  TrustReport,
 } from "@/lib/schemas";
 
-// In-memory store for demo (would be database in production)
 const invocations: Map<string, CapInvocation> = new Map();
 const settlements: Map<string, SettlementRecord> = new Map();
 
-// Service pricing tiers
+let _client: any = null;
+let _connected = false;
+let _initAttempted = false;
+
 export const SERVICE_TIERS: PricingTier[] = [
   {
     tier_id: "quick",
@@ -45,7 +46,6 @@ export const SERVICE_TIERS: PricingTier[] = [
   },
 ];
 
-// Agent identity
 export const AGENT_IDENTITY = {
   agent_id: "sourcebouncer-v1",
   name: "SourceBouncer",
@@ -63,7 +63,103 @@ export const AGENT_IDENTITY = {
   wallet_address: process.env.CROO_AGENT_WALLET || "0x0000000000000000000000000000000000000000",
 };
 
-// Create a CAP invocation
+// Lazy CAP client initialization - only when actually needed
+async function getClient(): Promise<any> {
+  if (_client) return _client;
+  if (_initAttempted) return null;
+  _initAttempted = true;
+
+  const sdkKey = process.env.CROO_SDK_KEY;
+  if (!sdkKey) {
+    console.warn("CAP SDK: CROO_SDK_KEY not set, running in simulation mode");
+    return null;
+  }
+
+  try {
+    const sdk = await import("@croo-network/sdk");
+    const AgentClientClass = sdk.AgentClient;
+
+    if (!AgentClientClass) {
+      console.warn("CAP SDK: AgentClient not found");
+      return null;
+    }
+
+    _client = new AgentClientClass(
+      {
+        baseURL: process.env.CROO_API_URL || "https://cap.croo.network",
+        wsURL: process.env.CROO_WS_URL || "wss://cap.croo.network",
+      },
+      sdkKey
+    );
+
+    if (typeof _client.connect === "function") {
+      await _client.connect();
+      _connected = true;
+      console.log("CAP SDK connected");
+    }
+
+    return _client;
+  } catch (error) {
+    console.warn("CAP SDK init failed, simulation mode:", error);
+    _client = null;
+    return null;
+  }
+}
+
+export { getClient as getCAPClient };
+
+export function isCAPConnected(): boolean {
+  return _connected;
+}
+
+export async function registerService(): Promise<void> {
+  const client = await getClient();
+  if (!client) return;
+  try {
+    if (typeof client.registerService === "function") {
+      await client.registerService({
+        agentId: AGENT_IDENTITY.agent_id,
+        capabilities: AGENT_IDENTITY.capabilities,
+        pricing: SERVICE_TIERS.map(t => ({
+          tier: t.tier_id,
+          price: t.price_usdc,
+          currency: "USDC",
+        })),
+      });
+    }
+  } catch (error) {
+    console.warn("CAP service registration failed:", error);
+  }
+}
+
+export async function acceptNegotiation(negotiationId: string): Promise<boolean> {
+  const client = await getClient();
+  if (!client) return true;
+  try {
+    if (typeof client.acceptNegotiation === "function") {
+      await client.acceptNegotiation(negotiationId);
+    }
+    return true;
+  } catch (error) {
+    console.warn("CAP negotiation failed:", error);
+    return false;
+  }
+}
+
+export async function deliverOrder(invocationId: string, resultHash: string): Promise<boolean> {
+  const client = await getClient();
+  if (!client) return true;
+  try {
+    if (typeof client.deliverOrder === "function") {
+      await client.deliverOrder(invocationId, resultHash);
+    }
+    return true;
+  } catch (error) {
+    console.warn("CAP delivery failed:", error);
+    return false;
+  }
+}
+
 export function createInvocation(
   taskId: string,
   requesterId: string,
@@ -83,7 +179,6 @@ export function createInvocation(
   return invocation;
 }
 
-// Simulate escrow lock (in production: calls CROO SDK escrow contract)
 export function escrowFunds(invocationId: string): CapInvocation {
   const inv = invocations.get(invocationId);
   if (!inv) throw new Error("Invocation not found");
@@ -92,7 +187,6 @@ export function escrowFunds(invocationId: string): CapInvocation {
   return inv;
 }
 
-// Complete invocation and settle payment
 export function completeAndSettle(
   invocationId: string,
   report: TrustReport
@@ -104,7 +198,6 @@ export function completeAndSettle(
   inv.settled_at = new Date().toISOString();
   invocations.set(invocationId, inv);
 
-  // Create settlement record
   const settlement: SettlementRecord = {
     settlement_id: uuidv4(),
     invocation_id: invocationId,
@@ -121,17 +214,14 @@ export function completeAndSettle(
   return { invocation: inv, settlement };
 }
 
-// Get all invocations
 export function getAllInvocations(): CapInvocation[] {
   return Array.from(invocations.values());
 }
 
-// Get all settlements
 export function getAllSettlements(): SettlementRecord[] {
   return Array.from(settlements.values());
 }
 
-// Get tier by ID
 export function getTierById(tierId: string): PricingTier | undefined {
   return SERVICE_TIERS.find((t) => t.tier_id === tierId);
 }

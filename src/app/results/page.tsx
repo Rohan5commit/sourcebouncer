@@ -2,48 +2,45 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Shield, FileText, ExternalLink } from "lucide-react";
+import { Shield } from "lucide-react";
+import { VerdictBadge } from "@/components/VerdictBadge";
+import { ScoreCard, ProgressBar } from "@/components/ScoreCard";
+import { PageHeader } from "@/components/PageHeader";
 
 function ResultsContent() {
   const searchParams = useSearchParams();
   const taskId = searchParams.get("task");
   const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!taskId) {
-      fetch("/api/tasks").then((r) => r.json()).then((d) => {
-        if (d.reports?.length > 0) {
-          setData(d.reports[0]);
+    setLoading(true);
+    fetch("/api/tasks")
+      .then((r) => r.json())
+      .then((d) => {
+        if (taskId && d.reports) {
+          const report = d.reports.find((r: any) => r.task_id === taskId);
+          if (report) { setData(report); setLoading(false); return; }
         }
-      });
-    }
+        if (d.reports?.length > 0) setData(d.reports[0]);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, [taskId]);
 
-  if (!data) return <div className="max-w-5xl mx-auto px-4 py-12 text-[#6b7280]">Loading results...</div>;
+  if (loading) return <div className="max-w-5xl mx-auto px-4 py-12 text-[#6b7280]">Loading results...</div>;
+  if (!data) return <div className="max-w-5xl mx-auto px-4 py-12 text-[#6b7280]">No results found.</div>;
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-12">
-      <div className="flex items-center gap-3 mb-8">
-        <Shield className="w-8 h-8 text-blue-400" />
-        <div>
-          <h1 className="text-3xl font-bold">Trust Report</h1>
-          <p className="text-sm text-[#6b7280]">Report ID: {data.report_id?.substring(0, 8)}...</p>
-        </div>
-      </div>
+      <PageHeader icon={Shield} title="Trust Report" subtitle={`Report ID: ${data.report_id?.substring(0, 8)}...`} />
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-        {[
-          { label: "Trust Score", value: `${Math.round(data.overall_trust_score * 100)}%`, color: data.overall_trust_score > 0.7 ? "text-green-400" : "text-yellow-400" },
-          { label: "Citation Score", value: `${Math.round(data.citation_presence_score * 100)}%`, color: "text-blue-400" },
-          { label: "Source Relevance", value: `${Math.round(data.source_relevance_score * 100)}%`, color: "text-blue-400" },
-          { label: "Contradiction Risk", value: `${Math.round(data.contradiction_risk * 100)}%`, color: data.contradiction_risk > 0.3 ? "text-red-400" : "text-green-400" },
-          { label: "Unsupported Ratio", value: `${Math.round(data.unsupported_ratio * 100)}%`, color: data.unsupported_ratio > 0.2 ? "text-orange-400" : "text-green-400" },
-        ].map((s) => (
-          <div key={s.label} className="bg-[#12121a] border border-[#1e293b] rounded-xl p-4 text-center">
-            <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
-            <div className="text-xs text-[#6b7280]">{s.label}</div>
-          </div>
-        ))}
+        <ScoreCard label="Trust Score" value={`${Math.round(data.overall_trust_score * 100)}%`} color={data.overall_trust_score > 0.7 ? "text-green-400" : "text-yellow-400"} />
+        <ScoreCard label="Citation Score" value={`${Math.round(data.citation_presence_score * 100)}%`} color="text-blue-400" />
+        <ScoreCard label="Source Relevance" value={`${Math.round(data.source_relevance_score * 100)}%`} color="text-blue-400" />
+        <ScoreCard label="Contradiction Risk" value={`${Math.round(data.contradiction_risk * 100)}%`} color={data.contradiction_risk > 0.3 ? "text-red-400" : "text-green-400"} />
+        <ScoreCard label="Unsupported Ratio" value={`${Math.round(data.unsupported_ratio * 100)}%`} color={data.unsupported_ratio > 0.2 ? "text-orange-400" : "text-green-400"} />
       </div>
 
       <div className="bg-[#12121a] border border-[#1e293b] rounded-xl p-6 mb-8">
@@ -57,28 +54,12 @@ function ResultsContent() {
           <div key={i} className="bg-[#12121a] border border-[#1e293b] rounded-xl p-6">
             <div className="flex items-start justify-between mb-3">
               <p className="font-medium flex-1">&quot;{v.claim_text}&quot;</p>
-              <span className={`text-sm font-medium px-3 py-1 rounded-full ml-4 ${
-                v.verdict === "supported" ? "bg-green-500/10 text-green-400" :
-                v.verdict === "contradicted" ? "bg-red-500/10 text-red-400" :
-                v.verdict === "unsupported" ? "bg-orange-500/10 text-orange-400" :
-                v.verdict === "partially_supported" ? "bg-yellow-500/10 text-yellow-400" :
-                "bg-gray-500/10 text-gray-400"
-              }`}>{v.verdict.replace(/_/g, " ")}</span>
+              <VerdictBadge verdict={v.verdict} className="ml-4 shrink-0" />
             </div>
             <p className="text-sm text-[#a0a0b0] mb-4">{v.reasoning}</p>
             <div className="grid grid-cols-3 gap-4 text-xs">
-              <div>
-                <span className="text-[#6b7280]">Evidence Strength</span>
-                <div className="mt-1 h-2 bg-[#1e293b] rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-500 rounded-full" style={{ width: `${v.evidence_strength * 100}%` }} />
-                </div>
-              </div>
-              <div>
-                <span className="text-[#6b7280]">Confidence</span>
-                <div className="mt-1 h-2 bg-[#1e293b] rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-500 rounded-full" style={{ width: `${v.confidence * 100}%` }} />
-                </div>
-              </div>
+              <ProgressBar label="Evidence Strength" value={v.evidence_strength * 100} />
+              <ProgressBar label="Confidence" value={v.confidence * 100} />
               <div>
                 <span className="text-[#6b7280]">Sources</span>
                 <div className="mt-1 text-white">{v.supporting_sources?.length || 0} supporting, {v.conflicting_sources?.length || 0} conflicting</div>
