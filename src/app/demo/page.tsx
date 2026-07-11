@@ -146,7 +146,7 @@ export default function DemoPage() {
         <div className="space-y-4">
           {claims.map((claim, idx) => (
             <div key={idx} className="flex gap-3">
-              <input value={claim.claim_text} onChange={(e) => {
+              <input id={`claim-${idx}`} name={`claim-${idx}`} value={claim.claim_text} onChange={(e) => {
                 const next = [...claims]; next[idx].claim_text = e.target.value; setClaims(next);
               }} placeholder="Enter a claim to verify..." className="flex-1 bg-[#0a0a0f] border border-[#1e293b] rounded-lg px-4 py-3 text-sm focus:border-blue-500 focus:outline-none" />
               {claims.length > 1 && (
@@ -165,14 +165,14 @@ export default function DemoPage() {
         <div className="space-y-4">
           {sources.map((source, idx) => (
             <div key={idx} className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <input value={source.title} onChange={(e) => {
+              <input id={`source-title-${idx}`} name={`source-title-${idx}`} value={source.title} onChange={(e) => {
                 const next = [...sources]; next[idx].title = e.target.value; setSources(next);
               }} placeholder="Source title" className="bg-[#0a0a0f] border border-[#1e293b] rounded-lg px-4 py-3 text-sm focus:border-blue-500 focus:outline-none" />
-              <input value={source.content} onChange={(e) => {
+              <input id={`source-content-${idx}`} name={`source-content-${idx}`} value={source.content} onChange={(e) => {
                 const next = [...sources]; next[idx].content = e.target.value; setSources(next);
               }} placeholder="Source content" className="bg-[#0a0a0f] border border-[#1e293b] rounded-lg px-4 py-3 text-sm focus:border-blue-500 focus:outline-none" />
               <div className="flex gap-2">
-                <select value={source.source_type} onChange={(e) => {
+                <select id={`source-type-${idx}`} name={`source-type-${idx}`} value={source.source_type} onChange={(e) => {
                   const next = [...sources]; next[idx].source_type = e.target.value; setSources(next);
                 }} className="flex-1 bg-[#0a0a0f] border border-[#1e293b] rounded-lg px-4 py-3 text-sm focus:border-blue-500 focus:outline-none">
                   <option value="academic">Academic</option>
