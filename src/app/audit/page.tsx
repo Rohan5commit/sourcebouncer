@@ -15,7 +15,10 @@ export default function AuditPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold mb-2">Transaction & Audit View</h1>
-      <p className="text-[#a0a0b0] mb-8">Complete audit trail of all verification jobs, CAP invocations, and on-chain settlements</p>
+      <p className="text-[#a0a0b0] mb-4">Complete audit trail of all verification jobs, CAP invocations, and on-chain settlements</p>
+      <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg px-4 py-3 mb-8">
+        <p className="text-blue-300 text-sm font-medium">ℹ️ Settlement records are simulated in this demo. The CAP protocol flow (invoke → escrow → deliver → settle) is fully implemented in code. Set <code className="bg-blue-900/30 px-1 rounded">CROO_SDK_KEY</code> + funded wallet to enable live on-chain USDC settlement.</p>
+      </div>
 
       {/* CAP Status */}
       {capData && (
@@ -72,7 +75,7 @@ export default function AuditPage() {
                     <DollarSign className="w-4 h-4 text-green-400" />
                     <span className="text-green-400">${s.amount_usdc} USDC settled</span>
                   </div>
-                  <div className="text-xs text-[#6b7280] font-mono">Tx: {s.tx_hash?.substring(0, 20)}...</div>
+                  <div className="text-xs text-[#6b7280] font-mono">Tx: {s.tx_hash?.substring(0, 20)}... <span className="text-blue-400/60">(simulated)</span></div>
                   <div className="text-xs text-[#6b7280]">Chain: {s.chain} • Status: {s.status}</div>
                 </div>
               ))}

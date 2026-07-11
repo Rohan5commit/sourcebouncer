@@ -17,7 +17,10 @@ export default function ArchitecturePage() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold mb-2">Architecture</h1>
-      <p className="text-[#a0a0b0] mb-12">Why paid verification is essential for the agent economy, and how SourceBouncer delivers it.</p>
+      <p className="text-[#a0a0b0] mb-4">Why paid verification is essential for the agent economy, and how SourceBouncer delivers it.</p>
+      <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg px-4 py-3 mb-12">
+        <p className="text-blue-300 text-sm font-medium">ℹ️ This demo implements the full CAP protocol flow with simulated USDC settlement. All other components (AI verification, trust reports, schemas, A2A composability) are fully operational. Set <code className="bg-blue-900/30 px-1 rounded">CROO_SDK_KEY</code> + funded wallet to switch to live on-chain settlement. See <a href="/audit" className="underline">Audit</a> for settlement details.</p>
+      </div>
 
       <div className="bg-[#12121a] border border-[#1e293b] rounded-xl p-8 mb-12">
         <h2 className="text-xl font-semibold mb-4">Why Paid Verification Matters</h2>

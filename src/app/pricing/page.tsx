@@ -66,8 +66,11 @@ export default function PricingPage() {
           </div>
         ))}
       </div>
-      <div className="text-center mt-12 text-sm text-[#6b7280]">
-        <p>Payment handled via CAP — USDC on Base — On-chain settlement</p>
+      <div className="text-center mt-12 space-y-2">
+        <p className="text-sm text-[#6b7280]">Payment handled via CAP — USDC on Base — On-chain settlement</p>
+        <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg px-4 py-3 inline-block">
+          <p className="text-blue-300 text-xs font-medium">ℹ️ Settlement is simulated in this demo. Live on-chain USDC settlement requires CROO_SDK_KEY + funded wallet on Base.</p>
+        </div>
       </div>
     </div>
   );

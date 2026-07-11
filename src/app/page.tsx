@@ -1,7 +1,6 @@
 "use client";
 
 import { Shield, Zap, ArrowRight, CheckCircle, Globe, Users, TrendingUp } from "lucide-react";
-import { useState, useEffect } from "react";
 
 const FEATURES = [
   {
@@ -45,19 +44,6 @@ const WORKFLOW_STEPS = [
 ];
 
 export default function LandingPage() {
-  const [stats, setStats] = useState({ tasks: 0, agents: 0, score: 0 });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setStats((prev) => ({
-        tasks: Math.min(prev.tasks + 47, 12847),
-        agents: Math.min(prev.agents + 3, 847),
-        score: Math.min(prev.score + 0.02, 0.94),
-      }));
-    }, 50);
-    return () => clearInterval(timer);
-  }, []);
-
   return (
     <div className="min-h-screen">
       <section className="relative overflow-hidden">
@@ -85,18 +71,18 @@ export default function LandingPage() {
               </a>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-8 mt-20 max-w-xl mx-auto">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-white">{stats.tasks.toLocaleString()}</div>
-              <div className="text-sm text-[#6b7280]">Verifications</div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20 max-w-2xl mx-auto">
+            <div className="bg-[#12121a] border border-[#1e293b] rounded-xl p-6 text-center">
+              <div className="text-3xl font-bold text-blue-400 mb-1">Claim-by-Claim</div>
+              <div className="text-sm text-[#6b7280]">AI verdicts with confidence scores</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-white">{stats.agents}</div>
-              <div className="text-sm text-[#6b7280]">Agent Users</div>
+            <div className="bg-[#12121a] border border-[#1e293b] rounded-xl p-6 text-center">
+              <div className="text-3xl font-bold text-green-400 mb-1">CAP Native</div>
+              <div className="text-sm text-[#6b7280]">USDC settlement on Base</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-400">{(stats.score * 100).toFixed(0)}%</div>
-              <div className="text-sm text-[#6b7280]">Avg Trust Score</div>
+            <div className="bg-[#12121a] border border-[#1e293b] rounded-xl p-6 text-center">
+              <div className="text-3xl font-bold text-purple-400 mb-1">A2A Ready</div>
+              <div className="text-sm text-[#6b7280]">Other agents can hire via CAP</div>
             </div>
           </div>
         </div>

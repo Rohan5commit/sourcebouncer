@@ -79,7 +79,10 @@ export default function DemoPage() {
           <ScoreCard label="Trust Score" value={`${Math.round(result.report.overall_trust_score * 100)}%`} color="text-green-400" />
           <ScoreCard label="Claims Verified" value={result.report.claim_verdicts.length} />
           <ScoreCard label="USDC Settled" value={`$${result.settlement.amount_usdc}`} color="text-green-400" />
-          <ScoreCard label="On-chain Tx" value={result.settlement.tx_hash?.substring(0, 16) + "..."} />
+          <ScoreCard label="Settlement" value={`${result.settlement.tx_hash?.substring(0, 12)}...`} />
+        </div>
+        <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg px-4 py-3 mb-8">
+          <p className="text-blue-300 text-xs">ℹ️ Settlement records are simulated (in-memory with generated tx hash). The CAP protocol flow is fully implemented. See <a href="/architecture" className="underline">Architecture</a> for details.</p>
         </div>
         <div className="bg-[#12121a] border border-[#1e293b] rounded-xl p-6 mb-8">
           <h2 className="text-lg font-semibold mb-3">Report Summary</h2>
