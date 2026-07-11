@@ -9,14 +9,16 @@ import {
 import { analyzeClaim, generateReportSummary } from "@/lib/ai/nvidia-nim";
 
 export async function runVerification(task: VerificationTask): Promise<TrustReport> {
-  const verdicts: ClaimVerdict[] = [];
   const sources = task.sources || [];
 
-  // Analyze each claim
-  for (const claim of task.claims) {
-    const verdictOutput = await analyzeClaim({ claim, sources });
+  // Analyze ALL claims in parallel for speed
+  const verdictOutputs = await Promise.all(
+    task.claims.map((claim) => analyzeClaim({ claim, sources }))
+  );
 
-    const verdict: ClaimVerdict = {
+  const verdicts: ClaimVerdict[] = task.claims.map((claim, idx) => {
+    const verdictOutput = verdictOutputs[idx];
+    return {
       claim_id: claim.claim_id,
       claim_text: claim.claim_text,
       verdict: verdictOutput.verdict,
@@ -37,8 +39,7 @@ export async function runVerification(task: VerificationTask): Promise<TrustRepo
       reasoning: verdictOutput.reasoning,
       revision_suggestion: verdictOutput.revision_suggestion,
     };
-    verdicts.push(verdict);
-  }
+  });
 
   // Calculate aggregate scores
   const totalClaims = verdicts.length;
