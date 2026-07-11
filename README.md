@@ -39,6 +39,34 @@ AI agents are multiplying fast. Bad outputs destroy trust. Most agents still can
 
 **To enable live settlements:** Set `CROO_SDK_KEY` and `CROO_AGENT_WALLET` (funded with USDC on Base) in your environment. The code switches from simulation to live CAP automatically.
 
+## CAP SDK Methods Used
+
+SourceBouncer integrates with `@croo-network/sdk` using the following methods:
+
+| SDK Method | Location | Description |
+|------------|----------|-------------|
+| `new AgentClient(config, sdkKey)` | `cap/provider.ts` | Initialize SDK client with CAP network endpoints and API key |
+| `client.connect()` | `cap/provider.ts` | Establish WebSocket connection to CAP network for real-time events |
+| `client.registerService({agentId, capabilities, pricing})` | `cap/provider.ts` | Register SourceBouncer as a callable service on the Agent Store |
+| `client.acceptNegotiation(negotiationId)` | `cap/provider.ts` | Accept incoming CAP negotiation from a requester agent |
+| `client.deliverOrder(invocationId, resultHash)` | `cap/provider.ts` | Deliver verification result hash to complete the order |
+
+**Internal helpers** (not SDK calls, but part of the CAP lifecycle):
+
+| Function | File | Description |
+|----------|------|-------------|
+| `createInvocation(taskId, requesterId, tier)` | `cap/provider.ts` | Create a new CAP invocation record |
+| `escrowFunds(invocationId)` | `cap/provider.ts` | Lock funds in escrow state for the invocation |
+| `completeAndSettle(invocationId, report)` | `cap/provider.ts` | Mark invocation complete and generate settlement record |
+| `getAllInvocations()` | `cap/provider.ts` | Retrieve all invocation records for audit trail |
+| `getAllSettlements()` | `cap/provider.ts` | Retrieve all settlement records for audit trail |
+
+**Integration notes:**
+- SDK initialization is lazy — only connects when `CROO_SDK_KEY` is set
+- Falls back to in-memory simulation when SDK is unavailable
+- All SDK calls are wrapped in try/catch with graceful degradation
+- WebSocket connection enables real-time negotiation events from other agents
+
 ## How Downstream Agents Consume Outputs
 
 SourceBouncer returns a structured `TrustReport` JSON object that includes:
