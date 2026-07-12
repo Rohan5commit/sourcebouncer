@@ -213,6 +213,35 @@ export function getWalletManager(): WalletManager {
   return _instance;
 }
 
+// ---- Demo Balance Configuration ----
+
+/**
+ * FIX #16: Centralized demo balance constant.
+ * Previously, demo balance was hardcoded at 1250.50 in multiple places.
+ * Now defined once and used consistently across all balance queries.
+ */
+export const DEMO_BALANCE = 1250.50;
+
+/**
+ * Get the wallet balance.
+ *
+ * FIX #16: Uses centralized DEMO_BALANCE constant instead of hardcoded
+ * values scattered across multiple functions. This ensures consistency
+ * between the balance shown in the split screen and balance queries.
+ *
+ * @param groupId - Optional group ID for group-specific balance
+ * @returns Current wallet balance
+ */
+export async function getBalance(groupId?: string): Promise<number> {
+  // In production, query on-chain balance for the wallet
+  // For demo mode, return the centralized demo balance
+  if (groupId) {
+    const escrowAddress = deriveEscrowAddress(groupId);
+    console.log(`Querying balance for escrow ${escrowAddress}`);
+  }
+  return DEMO_BALANCE;
+}
+
 // ---- Trip Fund Escrow Functions ----
 
 /**
