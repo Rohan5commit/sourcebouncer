@@ -24,7 +24,7 @@ export interface DemoScenario {
     content: string;
     source_type: "academic" | "news" | "government" | "industry" | "blog" | "other";
   }>;
-  expectedVerdicts: Record<string, "supported" | "contradicted" | "unsupported">;
+  expectedVerdicts: Record<string, "supported" | "contradicted" | "unsupported" | "partially_supported" | "unverifiable">;
   pricingTier: "quick" | "deep" | "bundle";
 }
 

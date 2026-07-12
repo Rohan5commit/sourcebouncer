@@ -90,6 +90,7 @@ export type WalletStateLegacy = {
   balance?: number;
   isConnected: boolean;
   isLocked: boolean;
+  provider?: string;
   // SECURITY: seedPhrase intentionally NOT included here
   // It should never be stored in component state
 };
