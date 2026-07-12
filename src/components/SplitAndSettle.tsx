@@ -10,7 +10,8 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowRight, CheckCircle, Users, DollarSign, Loader2 } from "lucide-react";
 import {
   handleSettle,
@@ -31,6 +32,7 @@ interface SplitAndSettleProps {
 }
 
 export function SplitAndSettle({ groupId, members, onSettled }: SplitAndSettleProps) {
+  const router = useRouter();
   const [selectedPayer, setSelectedPayer] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -39,6 +41,14 @@ export function SplitAndSettle({ groupId, members, onSettled }: SplitAndSettlePr
     expense: SharedExpense;
     transactions: SettlementTransaction[];
   } | null>(null);
+
+  // FIX #11: navigate is properly included in useEffect dependencies
+  // This satisfies react-hooks/exhaustive-deps ESLint rule
+  useEffect(() => {
+    if (!groupId || members.length === 0) {
+      router.push("/setup");
+    }
+  }, [groupId, members.length, router]);
 
   const handleSettleClick = async () => {
     if (!selectedPayer || !amount || !description) return;
