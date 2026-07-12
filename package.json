@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@croo-network/sdk": "^0.2.1",
+    "@pear-js/hyperswarm": "^1.0.0",
+    "@wdk/wallet-evm": "^1.0.0",
+    "@wdk/wallet-tron": "^1.0.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.475.0",
     "next": "^15.3.3",
