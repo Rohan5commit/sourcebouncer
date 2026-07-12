@@ -209,3 +209,35 @@ export function markSettled(
     settled_at: new Date().toISOString(),
   };
 }
+
+// ---- Status Types and Helpers ----
+
+/**
+ * Trip member status type.
+ */
+export type TripMemberStatus = "arrived" | "traveling" | "offline" | string;
+
+/**
+ * Get the icon name for a trip member status.
+ *
+ * FIX #15: The original switch had no default case. If a new status was
+ * added to the Zod enum, it would silently return undefined. Now includes
+ * a default case that returns "help-circle" for unknown statuses.
+ *
+ * @param status - The member's current status
+ * @returns Icon name string for rendering
+ */
+export function getStatusIcon(status: TripMemberStatus): string {
+  switch (status) {
+    case "arrived":
+      return "check-circle";
+    case "traveling":
+      return "map-pin";
+    case "offline":
+      return "x-circle";
+    default:
+      // FIX #15: Default case handles any future status additions
+      console.warn(`[Trip] Unknown status: ${status}`);
+      return "help-circle";
+  }
+}
